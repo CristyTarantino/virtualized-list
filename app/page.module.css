@@ -1,8 +1,16 @@
 .main {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6rem;
-  min-height: 100vh;
+  height: 100vh;
+  margin: 0;
+  padding: 1rem;
+}
+
+.header {
+  text-align: center;
+}
+
+.listContainer {
+  flex: 1; /* Take up remaining space */
+  overflow: auto; /* Enable scrolling within this container if content overflows */
 }
