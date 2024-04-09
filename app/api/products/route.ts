@@ -3,7 +3,7 @@ import { createRandomProduct } from "@/utils/data-creation";
 import { NextResponse } from "next/server";
 
 const products: ProductListItem[] = Array.from(
-  { length: 10000 },
+  { length: 100000 },
   createRandomProduct,
 );
 

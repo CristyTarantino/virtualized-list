@@ -1,6 +1,6 @@
-import { getProducts } from "@/app/lib/products";
-import SimpleList from "@/components/simple-list";
 import { NextPage } from "next";
+import { getProducts } from "@/app/lib/products";
+import VirtualizedList from "@/components/virtualized-list-perf";
 import styles from "./page.module.css";
 
 const Home: NextPage = async () => {
@@ -12,7 +12,19 @@ const Home: NextPage = async () => {
         <h1>Virtualized List</h1>
       </header>
       <div className={styles.listContainer}>
-        <SimpleList items={products} />
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
+            textAlign: "center",
+            padding: "20px",
+          }}
+        >
+          <div>Name</div>
+          <div>Description</div>
+          <div>Price</div>
+        </div>
+        <VirtualizedList products={products} />
       </div>
     </main>
   );

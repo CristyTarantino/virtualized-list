@@ -12,5 +12,6 @@
 
 .listContainer {
   flex: 1; /* Take up remaining space */
-  overflow: auto; /* Enable scrolling within this container if content overflows */
+  display: flex;
+  flex-direction: column;
 }
