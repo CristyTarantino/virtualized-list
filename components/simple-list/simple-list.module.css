@@ -5,18 +5,17 @@
   overflow-y: auto; /* Allow vertical scrolling */
 }
 
-table {
+.table {
   width: 100%;
   border-collapse: collapse;
 }
 
-th,
-td {
+.table-data {
   text-align: left;
   padding: 8px;
 }
 
-th {
+.tableHeader {
   position: sticky;
   top: 0;
   z-index: 1;
