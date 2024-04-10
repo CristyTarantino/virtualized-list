@@ -8,7 +8,7 @@ import Page from "./page";
 import "@testing-library/jest-dom";
 
 // Mock the data fetching function directly
-jest.mock("@/app/lib/products", () => ({
+jest.mock("@/app/actions/products", () => ({
   getProducts: jest.fn(() =>
     Promise.resolve({
       products: Array.from({ length: 10 }, createRandomProduct),
