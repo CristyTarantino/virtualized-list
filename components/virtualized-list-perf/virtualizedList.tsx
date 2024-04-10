@@ -17,7 +17,7 @@ const VirtualList = <T extends object>({
   buffer = 10,
 }: VirtualListProps<T>) => {
   const { addItem } = useVirtualizedListContext();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null); // Add this line to create a ref for the container
   const [scrollTop, setScrollTop] = useState(0);
   const itemCount = useMemo(() => items.length, [items]);
   const startIndex = useMemo(
@@ -57,6 +57,12 @@ const VirtualList = <T extends object>({
     }
   }, [addItem, containerHeight, itemHeight, items.length]);
 
+  const scrollToTop = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = 0;
+    }
+  };
+
   return (
     <div
       ref={containerRef}
@@ -78,6 +84,18 @@ const VirtualList = <T extends object>({
           {generateRows()}
         </div>
       </div>
+      {scrollTop > 0 && (
+        <button
+          style={{
+            position: "sticky",
+            bottom: "20px",
+            left: "95%",
+          }}
+          onClick={scrollToTop}
+        >
+          Scroll to Top
+        </button>
+      )}
     </div>
   );
 };
