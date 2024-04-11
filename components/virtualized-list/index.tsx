@@ -9,6 +9,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import styles from "./styles.module.css";
 
 interface VirtualListProps<T extends object> {
   items: T[];
@@ -53,7 +54,6 @@ const VirtualList = <T extends object>({
           key={index}
           style={{
             height: `${itemHeight}px`,
-            overflowAnchor: "none",
           }}
         >
           {itemContent(items[index], index)}
@@ -80,19 +80,21 @@ const VirtualList = <T extends object>({
   return (
     <>
       {!!header && header}
-      <div style={{ flex: 1 }} ref={containerRef}>
+      <div className={styles.virtualListContainer} ref={containerRef}>
         {!!windowSize.height && (
           <div
             ref={innerContainerRef}
-            style={{ height: `${containerHeight}px`, overflowY: "scroll" }}
+            className={styles.scrollContainer}
+            style={{ height: `${containerHeight}px` }}
             onScroll={(e) => {
               setScrollTop(e.currentTarget.scrollTop);
             }}
           >
             <div
               style={{
-                height: `${itemCount * itemHeight}px`,
+                height: `${(itemCount - 1) * itemHeight}px`,
               }}
+              className={styles.itemsContainer}
             >
               <div
                 style={{
@@ -103,14 +105,7 @@ const VirtualList = <T extends object>({
               </div>
             </div>
             {scrollTop > 0 && (
-              <button
-                style={{
-                  position: "sticky",
-                  bottom: "20px",
-                  left: "95%",
-                }}
-                onClick={scrollToTop}
-              >
+              <button className={styles.topButton} onClick={scrollToTop}>
                 Scroll to Top
               </button>
             )}

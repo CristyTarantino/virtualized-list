@@ -3,15 +3,23 @@
   flex-direction: column;
   height: 100vh;
   margin: 0;
-  padding: 1rem;
+  padding: 1.5rem;
 }
 
 .header {
   text-align: center;
+  padding: 2rem;
+  position: relative;
 }
 
-.listContainer {
-  flex: 1; /* Take up remaining space */
+.addNewProductButtonContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
   display: flex;
-  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
 }

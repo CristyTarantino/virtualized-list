@@ -7,11 +7,11 @@ const AddProductButton = () => {
   const { triggerAddItem } = useVirtualizedListContext();
   const addItem = async () => {
     const response = await addProduct(createRandomProduct());
-    triggerAddItem(response.product);
+    triggerAddItem(response?.product);
   };
 
   return (
-    <button onClick={addItem} style={{ marginBottom: "20px" }}>
+    <button onClick={addItem} className="secondary">
       Add New Item
     </button>
   );

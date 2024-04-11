@@ -1,8 +1,39 @@
 "use client";
-import styles from "@/app/page.module.css";
+import styles from "./styles.module.css";
 import VirtualizedList from "@/components/virtualized-list";
 import { ProductListItem } from "@/interfaces";
-import React from "react";
+
+const headerTitles = ["Name", "Description", "Price"];
+const ITEM_HEIGHT = 70;
+
+const getProductItem = (
+  item: ProductListItem,
+  index: number,
+  products: ProductListItem[],
+) => (
+  <div
+    id={`item-${item.isbn}`}
+    className={`${styles.productRowContainer} ${index === products?.length - 1 ? styles.productRowContainerLast : ""}`}
+    style={{
+      gridTemplateColumns: `repeat(${headerTitles.length}, 1fr)`,
+    }}
+  >
+    <div className={`${styles.productRowItem} ${styles.productRowItemBorder}`}>
+      {item.name} - {index}
+    </div>
+    <div
+      className={`${styles.truncateOverflow} ${styles.productRowItemBorder}`}
+      // to enable truncation and center the item we need to use line-height the height of the full block
+      // ITEM_HEIGHT + padding: 1rem for the top and padding: 1rem for the bottom
+      style={{ lineHeight: `${ITEM_HEIGHT - 16 * 2}px` }}
+    >
+      {item.description}
+    </div>
+    <div className={`${styles.productRowItem} ${styles.productRowItemBorder}`}>
+      {item.price}
+    </div>
+  </div>
+);
 
 const ProductList = ({ products }: { products: ProductListItem[] }) => {
   return (
@@ -11,49 +42,20 @@ const ProductList = ({ products }: { products: ProductListItem[] }) => {
         items={products}
         header={
           <div
+            className={styles.header}
             style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              textAlign: "center",
-              padding: "20px",
+              gridTemplateColumns: `repeat(${headerTitles.length}, 1fr)`,
             }}
           >
-            <div>Name</div>
-            <div>Description</div>
-            <div>Price</div>
+            {headerTitles.map((item) => (
+              <div key={item} className={styles.headerItem}>
+                {item}
+              </div>
+            ))}
           </div>
         }
-        itemHeight={70}
-        itemContent={(item: ProductListItem, index) => (
-          <div
-            id={`item-${item.isbn}`}
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              height: "100%",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "flex-start",
-              }}
-            >
-              {item.name} - {index}
-            </div>
-            <div className={styles.truncateOverflow}>{item.description}</div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "flex-start",
-              }}
-            >
-              {item.price}
-            </div>
-          </div>
-        )}
+        itemHeight={ITEM_HEIGHT}
+        itemContent={(item, index) => getProductItem(item, index, products)}
       />
     </div>
   );

@@ -13,7 +13,9 @@ const Home: NextPage = async () => {
       <main className={styles.main}>
         <header className={styles.header}>
           <h1>Virtualized List</h1>
-          <AddProductButton />
+          <div className={styles.addNewProductButtonContainer}>
+            <AddProductButton />
+          </div>
         </header>
         <ProductList products={products} />
       </main>
