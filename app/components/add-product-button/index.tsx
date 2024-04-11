@@ -1,5 +1,5 @@
 "use client";
-import { useVirtualizedListContext } from "@/components/virtualized-list-perf/virtualized-list.context";
+import { useVirtualizedListContext } from "@/components/virtualized-list/context";
 import { createRandomProduct } from "@/utils/data-creation";
 import { addProduct } from "@/app/actions/products";
 

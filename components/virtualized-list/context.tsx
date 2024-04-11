@@ -16,7 +16,7 @@ interface VirtualizedListContextType {
 }
 
 // Initialize the context with a default value
-const VirtualizedListContext = createContext<
+export const VirtualizedListContext = createContext<
   VirtualizedListContextType | undefined
 >(undefined);
 

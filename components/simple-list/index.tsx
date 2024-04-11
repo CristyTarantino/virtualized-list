@@ -1,5 +1,5 @@
 import { ProductListItem } from "@/interfaces";
-import styles from "./simple-list.module.css";
+import styles from "./styles.module.css";
 
 interface SimpleListProps {
   items: ProductListItem[];
