@@ -1,6 +1,13 @@
 "use client";
 import { ProductListItem } from "@/interfaces";
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 
 // Define the type for your context state
 interface VirtualizedListContextType {
@@ -20,17 +27,23 @@ interface VirtualizedListProviderProps {
 // Context provider component
 export function VirtualizedListProvider({
   children,
-}: VirtualizedListProviderProps) {
+}: Readonly<VirtualizedListProviderProps>) {
   const [addItem, setAddItem] = useState<ProductListItem | null>(null); // Replace 'any' with the specific type for addItem
 
   // Function to update the action
-  const triggerAddItem = (newAction: ProductListItem) => {
+  const triggerAddItem = useCallback((newAction: ProductListItem) => {
     // Replace 'any' with the specific type for newAction
     setAddItem(newAction);
-  };
+  }, []);
+
+  // Memoize the context value to prevent unnecessary re-renders
+  const value = useMemo(
+    () => ({ addItem, triggerAddItem }),
+    [addItem, triggerAddItem],
+  );
 
   return (
-    <VirtualizedListContext.Provider value={{ addItem, triggerAddItem }}>
+    <VirtualizedListContext.Provider value={value}>
       {children}
     </VirtualizedListContext.Provider>
   );
