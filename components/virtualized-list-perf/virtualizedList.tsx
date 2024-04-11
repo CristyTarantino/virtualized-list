@@ -51,7 +51,7 @@ const VirtualList = <T extends object>({
   };
 
   useEffect(() => {
-    if (containerRef.current) {
+    if (addItem && containerRef.current) {
       containerRef.current.scrollTop =
         items.length * itemHeight - containerHeight;
     }
