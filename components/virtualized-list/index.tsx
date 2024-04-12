@@ -1,8 +1,9 @@
 "use client";
 import { VirtualizedListContext } from "@/components/virtualized-list/context";
-import useSize from "@/hooks/useSize";
+import useSize from "@/components/virtualized-list/useSize.hook";
 import React, {
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -26,86 +27,109 @@ const VirtualList = <T extends object>({
   itemContent,
   buffer = 10,
 }: VirtualListProps<T>) => {
+  // References to the DOM elements for the outer container and the scrollable inner container.
   const containerRef = useRef<HTMLDivElement>(null);
-  const windowSize = useSize(containerRef);
+  const innerContainerRef = useRef<HTMLDivElement>(null);
+
+  // Custom hook to measure the size of the container. It updates on resize events.
+  const { windowSize, updateSize } = useSize(containerRef);
+  // Calculate the visible height of the container taking into account the current window size.
   const containerHeight = useMemo(() => windowSize.height, [windowSize.height]);
 
+  // State to track the vertical scroll position within the inner container.
   const [scrollTop, setScrollTop] = useState(0);
-  const innerContainerRef = useRef<HTMLDivElement>(null); // Add this line to create a ref for the container
+
+  // Calculate the number of items based on the `items` array.
   const itemCount = useMemo(() => items.length, [items]);
+
+  // Determine the first visible item in the list based on scroll position and item height.
   const startIndex = useMemo(
     () => Math.max(0, Math.floor(scrollTop / itemHeight) - buffer),
     [buffer, itemHeight, scrollTop],
   );
 
+  // Accessing context for additional functionality such as adding items (if implemented).
   const context = useContext(VirtualizedListContext);
 
-  let renderedNodesCount =
-    Math.floor(containerHeight / itemHeight) + 2 * buffer;
+  // Calculate the number of items to render based on the container height and buffer.
+  const renderedNodesCount = useMemo(() => {
+    let count = Math.floor(containerHeight / itemHeight) + 2 * buffer;
+    return Math.min(itemCount - startIndex, count);
+  }, [containerHeight, itemHeight, itemCount, startIndex, buffer]);
 
-  renderedNodesCount = Math.min(itemCount - startIndex, renderedNodesCount);
-
-  const generateRows = () => {
-    let itemNodes: ReactNode[] = [];
-    for (let i = 0; i < renderedNodesCount; i++) {
+  // Generate row components for only the visible items.
+  const rows = useMemo(() => {
+    return Array.from({ length: renderedNodesCount }, (_, i) => {
       const index = i + startIndex;
-      itemNodes.push(
-        <div
-          key={index}
-          style={{
-            height: `${itemHeight}px`,
-          }}
-        >
-          {itemContent(items[index], index)}
-        </div>,
-      );
-    }
-
-    return itemNodes;
-  };
+      return itemContent(items[index], index);
+    });
+  }, [startIndex, renderedNodesCount, itemContent, items]);
 
   useEffect(() => {
+    // Automatically scroll to the bottom of the list when a new item is added to the context.
     if (context?.addItem && innerContainerRef.current) {
       innerContainerRef.current.scrollTop =
         items.length * itemHeight - containerHeight;
     }
   }, [context, containerHeight, itemHeight, items.length]);
 
-  const scrollToTop = () => {
-    if (innerContainerRef.current) {
-      innerContainerRef.current.scrollTop = 0;
+  const scrollToTop = useCallback(() => {
+    // Provides a method to scroll to the top of the list.
+    innerContainerRef.current?.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    // Adjusts the size of the container when the first item is added to ensure the container is sized correctly.
+    if (items?.length === 1) {
+      updateSize();
     }
-  };
+  }, [items?.length, updateSize]);
+
+  if (!items?.length) {
+    // Render a message when no items are available in the list.
+    return (
+      <div className={`${styles.flexFullHeight} ${styles.flexCenter}`}>
+        <p>No products available</p>
+        {context && <p>try adding one</p>}
+      </div>
+    );
+  }
 
   return (
     <>
       {!!header && header}
-      <div className={styles.virtualListContainer} ref={containerRef}>
-        {!!windowSize.height && (
+      <div className={styles.flexFullHeight} ref={containerRef}>
+        {!!windowSize?.height && (
           <div
             ref={innerContainerRef}
             className={styles.scrollContainer}
             style={{ height: `${containerHeight}px` }}
             onScroll={(e) => {
+              // Update the scroll position state whenever the user scrolls.
               setScrollTop(e.currentTarget.scrollTop);
             }}
           >
             <div
               style={{
-                height: `${(itemCount - 1) * itemHeight}px`,
+                height: `${itemCount * itemHeight}px`,
               }}
               className={styles.itemsContainer}
             >
               <div
                 style={{
+                  // CSS transform to position the rows starting from the calculated startIndex.
                   transform: `translateY(${startIndex * itemHeight}px)`,
                 }}
               >
-                {generateRows()}
+                {rows}
               </div>
             </div>
             {scrollTop > 0 && (
-              <button className={styles.topButton} onClick={scrollToTop}>
+              <button
+                className={styles.topButton}
+                onClick={scrollToTop}
+                aria-label="Scroll to top of list"
+              >
                 Scroll to Top
               </button>
             )}

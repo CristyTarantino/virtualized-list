@@ -1,5 +1,12 @@
-.virtualListContainer {
+.flexFullHeight {
   flex: 1;
+}
+
+.flexCenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .scrollContainer::-webkit-scrollbar-track {
@@ -30,6 +37,7 @@
 .itemsContainer {
   padding-right: 5px;
   margin-right: -5px;
+  transition: transform 0.2s ease-out;
 }
 
 .topButton {

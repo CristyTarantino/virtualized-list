@@ -1,6 +1,6 @@
 "use server";
 import { ProductListItem } from "@/interfaces";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 
 export type GetProductResponse = {
   products: ProductListItem[];

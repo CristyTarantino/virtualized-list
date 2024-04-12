@@ -7,6 +7,12 @@ import { FC, ReactElement } from "react";
 import Page from "./page";
 import "@testing-library/jest-dom";
 
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
+
 // Mock the data fetching function directly
 jest.mock("@/app/actions/products", () => ({
   getProducts: jest.fn(() =>
@@ -26,7 +32,7 @@ async function resolvedComponent<P = AnyComponentProps>(
   // The resolved component will be a functional component accepting props of type P
   const ComponentResolved = await Component(props);
   // Return a functional component that renders the resolved element
-  return function ResolvedComponent(props: P): ReactElement {
+  return function ResolvedComponent(): ReactElement {
     return ComponentResolved;
   };
 }
