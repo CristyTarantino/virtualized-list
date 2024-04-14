@@ -7,12 +7,6 @@ import { FC, ReactElement } from "react";
 import Page from "./page";
 import "@testing-library/jest-dom";
 
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-  observe: jest.fn(),
-  unobserve: jest.fn(),
-  disconnect: jest.fn(),
-}));
-
 // Mock the data fetching function directly
 jest.mock("@/app/actions/products", () => ({
   getProducts: jest.fn(() =>
