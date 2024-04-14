@@ -28,5 +28,5 @@
 }
 
 .productRowContainerLast {
-  border-bottom: 1px solid rgb(var(--foreground-rgb));
+  border-bottom: 2px solid rgb(var(--foreground-rgb));
 }
