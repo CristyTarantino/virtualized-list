@@ -1,4 +1,11 @@
-import { RefObject, useCallback, useLayoutEffect, useState } from "react";
+import * as console from "node:console";
+import {
+  RefObject,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 
 const useSize = (ref: RefObject<HTMLDivElement>, offset = 1) => {
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
@@ -7,12 +14,17 @@ const useSize = (ref: RefObject<HTMLDivElement>, offset = 1) => {
     if (ref.current) {
       setWindowSize({
         width: ref.current.offsetWidth,
-        height: ref.current.offsetHeight - offset,
+        // even if the offsetHeight is 0, the returned height is -1,
+        // which indicates that the height is unknown or uninitialized
+        height:
+          ref.current.offsetHeight === 0
+            ? 0
+            : ref.current.offsetHeight - offset,
       });
     }
   }, [offset, ref]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     // Copy ref.current to a variable within the effect as ref.current can change by the time this effect cleanup function runs
     const element = ref.current;
 
