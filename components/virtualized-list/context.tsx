@@ -1,5 +1,4 @@
 "use client";
-import { ProductListItem } from "@/interfaces";
 import {
   createContext,
   ReactNode,
@@ -10,26 +9,26 @@ import {
 } from "react";
 
 // Define the type for your context state
-interface VirtualizedListContextType {
-  addItem: ProductListItem | null;
-  triggerAddItem: (newAction: ProductListItem) => void;
+export interface VirtualizedListContextType<T extends object> {
+  addItem: T | null;
+  triggerAddItem: (newAction: T) => void;
 }
 
 export const VirtualizedListContext = createContext<
-  VirtualizedListContextType | undefined
+  VirtualizedListContextType<any> | undefined
 >(undefined);
 
-interface VirtualizedListProviderProps {
+interface VirtualizedListProviderProps<T> {
   children: ReactNode;
 }
 
-export function VirtualizedListProvider({
+export function VirtualizedListProvider<T>({
   children,
-}: Readonly<VirtualizedListProviderProps>) {
-  const [addItem, setAddItem] = useState<ProductListItem | null>(null); // Replace 'any' with the specific type for addItem
+}: Readonly<VirtualizedListProviderProps<T>>) {
+  const [addItem, setAddItem] = useState<T | null>(null); // Replace 'any' with the specific type for addItem
 
-  const triggerAddItem = useCallback((newAction: ProductListItem) => {
-    setAddItem(newAction);
+  const triggerAddItem = useCallback((newItem: T) => {
+    setAddItem(newItem);
   }, []);
 
   const value = useMemo(
@@ -44,12 +43,12 @@ export function VirtualizedListProvider({
   );
 }
 
-export function useVirtualizedListContext() {
+export function useVirtualizedListContext<T extends object>() {
   const context = useContext(VirtualizedListContext);
   if (!context) {
     throw new Error(
       "useVirtualizedListContext must be used within a VirtualizedListProvider",
     );
   }
-  return context;
+  return context as VirtualizedListContextType<T>;
 }
