@@ -68,14 +68,19 @@ const VirtualList = <T extends object>({
   useEffect(() => {
     // Automatically scroll to the bottom of the list when a new item is added to the context.
     if (context?.addItem && innerContainerRef.current) {
-      innerContainerRef.current.scrollTop =
-        items.length * itemHeight - containerHeight;
+      innerContainerRef.current?.scrollTo({
+        top: items.length * itemHeight - containerHeight,
+        behavior: "smooth",
+      });
     }
   }, [context, containerHeight, itemHeight, items.length]);
 
   const scrollToTop = useCallback(() => {
     // Provides a method to scroll to the top of the list.
-    innerContainerRef.current?.scrollTo(0, 0);
+    innerContainerRef.current?.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }, []);
 
   useEffect(() => {
