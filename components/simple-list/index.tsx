@@ -1,3 +1,4 @@
+// Keeping this for tech test progress reporting
 import { ProductListItem } from "@/interfaces";
 import styles from "./styles.module.css";
 
