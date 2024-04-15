@@ -8,6 +8,9 @@ After cloning the projest, run:
 npm install
 ```
 
+Duplicate the .env.template file in your own .env file and assign http://localhost:3000 to NEXT_PUBLIC_BASE_URL.
+
+
 Then run the development server:
 
 ```bash
@@ -43,6 +46,8 @@ TODO:
 N.B.
 I intentionally omitted infinite scrolling and pagination, viewing the test as an opportunity to showcase proficiency in
 optimizing React component performance.
+
+The live url needs a second refresh as Next.js 14 has some known issues with Vercel functions.
 
 ## The virtualized list
 
