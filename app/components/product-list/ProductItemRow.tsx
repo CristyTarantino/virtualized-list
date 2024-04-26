@@ -1,3 +1,4 @@
+import { memo } from "react";
 import styles from "./ProductItemRow.module.css";
 import { ProductListItem } from "@/interfaces";
 
@@ -15,7 +16,7 @@ const ProductItemRow = ({
   customClass?: string;
 }) => (
   <div
-    id={`item-${item.isbn}`}
+    id={`item-${item.id}`}
     className={`${styles.productRowContainer} ${customClass}`}
     style={{
       gridTemplateColumns: `repeat(${rowNumber}, 1fr)`,
@@ -39,4 +40,4 @@ const ProductItemRow = ({
   </div>
 );
 
-export default ProductItemRow;
+export default memo(ProductItemRow);

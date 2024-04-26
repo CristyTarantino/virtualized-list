@@ -30,17 +30,18 @@ const VirtualList = <T extends object>({
   // References to the DOM elements for the outer container and the scrollable inner container.
   const containerRef = useRef<HTMLDivElement>(null);
   const innerContainerRef = useRef<HTMLDivElement>(null);
+  const animationFrame = useRef<number | null>(null);
 
   // Custom hook to measure the size of the container. It updates on resize events.
   const { windowSize, updateSize } = useSize(containerRef);
   // Calculate the visible height of the container taking into account the current window size.
-  const containerHeight = useMemo(() => windowSize.height, [windowSize.height]);
+  const containerHeight = windowSize.height;
+
+  // Calculate the number of items based on the `items` array.
+  const itemCount = items.length;
 
   // State to track the vertical scroll position within the inner container.
   const [scrollTop, setScrollTop] = useState(0);
-
-  // Calculate the number of items based on the `items` array.
-  const itemCount = useMemo(() => items.length, [items]);
 
   // Determine the first visible item in the list based on scroll position and item height.
   const startIndex = useMemo(
@@ -72,6 +73,9 @@ const VirtualList = <T extends object>({
         top: items.length * itemHeight - containerHeight,
         behavior: "smooth",
       });
+
+      //reset the context
+      context?.setAddItem(null);
     }
   }, [context, containerHeight, itemHeight, items.length]);
 
@@ -81,6 +85,34 @@ const VirtualList = <T extends object>({
       top: 0,
       behavior: "smooth",
     });
+  }, []);
+
+  // Most displays use 60fps, and recalculating faster than that is just a waste of resources.
+  // The requestAnimationFrame() method tells the browser that you wish to perform an animation and requests
+  // that the browser shall call a specified function to update an animation before the next repaint.
+  // By doing the below, you can prevent registering multiple callbacks by
+  // canceling the previous callback (if it exists), and request another one.
+  // A bit like throttling but where the deferred timing is handled by the browser.
+  const onScroll = useCallback((e: React.UIEvent<HTMLDivElement, UIEvent>) => {
+    // Capture the scrollTop value from the event before entering the requestAnimationFrame
+    const currentScrollTop = e.currentTarget.scrollTop;
+
+    if (animationFrame.current) {
+      cancelAnimationFrame(animationFrame.current);
+    }
+
+    animationFrame.current = requestAnimationFrame(() => {
+      setScrollTop(currentScrollTop);
+    });
+  }, []);
+
+  // clean up the animation frame when the component unmounts
+  useEffect(() => {
+    return () => {
+      if (animationFrame.current) {
+        cancelAnimationFrame(animationFrame.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -109,10 +141,7 @@ const VirtualList = <T extends object>({
             ref={innerContainerRef}
             className={styles.scrollContainer}
             style={{ height: `${containerHeight}px` }}
-            onScroll={(e) => {
-              // Update the scroll position state whenever the user scrolls.
-              setScrollTop(e.currentTarget.scrollTop);
-            }}
+            onScroll={onScroll}
           >
             <div
               style={{

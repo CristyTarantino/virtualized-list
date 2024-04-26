@@ -28,7 +28,7 @@ const ProductList = ({ products }: { products: ProductListItem[] }) => (
       itemHeight={ITEM_HEIGHT}
       itemContent={(item, index) => (
         <ProductItemRow
-          key={item.isbn}
+          key={item.id}
           item={item}
           index={index}
           customClass={

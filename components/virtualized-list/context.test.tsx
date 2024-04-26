@@ -7,8 +7,8 @@ describe("VirtualizedListContext", () => {
     const setAddItem = jest.fn(); // Create a mock function for setAddItem
 
     const MockComponent = () => {
-      const { triggerAddItem } = useVirtualizedListContext();
-      return <button onClick={() => triggerAddItem(["test"])}>Click me</button>;
+      const { setAddItem } = useVirtualizedListContext();
+      return <button onClick={() => setAddItem(["test"])}>Click me</button>;
     };
 
     // Mock useState to return the mock function
@@ -29,8 +29,8 @@ describe("VirtualizedListContext", () => {
     const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
     const TestComponent = () => {
-      const { triggerAddItem } = useVirtualizedListContext(); // Using mocked hook
-      return <div onClick={() => triggerAddItem(["test"])}>Click me</div>;
+      const { setAddItem } = useVirtualizedListContext(); // Using mocked hook
+      return <div onClick={() => setAddItem(["test"])}>Click me</div>;
     };
 
     expect(() => render(<TestComponent />)).toThrow();

@@ -3,11 +3,13 @@ import {
   fireEvent,
   getAllByTestId,
   screen,
+  waitFor,
 } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import VirtualList from "./index";
 import { useVirtualizedListContext, VirtualizedListProvider } from "./context";
+
 const spyScrollTo = jest.fn();
 
 // Define the itemContent function
@@ -16,6 +18,7 @@ const itemContent = (item: { id: number; name: string }, index: number) => (
     {item.name}-{index}
   </div>
 );
+
 describe("VirtualList", () => {
   // Test rendering when there are no items
   it("renders no products message when no items are provided", () => {
@@ -27,7 +30,7 @@ describe("VirtualList", () => {
   });
 
   // Test rendering with items and scrolling behavior
-  it("renders items and scrolls to top", () => {
+  it("renders items and scrolls to top", async () => {
     const items = Array.from({ length: 20 }, (_, i) => ({
       id: i,
       name: `Item ${i}`,
@@ -45,17 +48,28 @@ describe("VirtualList", () => {
     const renderedItems = getAllByTestId(container, /^item-/);
     expect(renderedItems).toHaveLength(items.length); // Assuming a buffer of 10
 
-    // Simulate scrolling
-    fireEvent.scroll(scrollContainer!, { target: { scrollTop: 100 } });
+    act(() => {
+      // Simulate scrolling
+      fireEvent.scroll(scrollContainer!, { target: { scrollTop: 1400 } });
+    });
 
-    const scrollTopButton = screen.getByText("Scroll to Top");
-    expect(scrollTopButton).toBeInTheDocument();
+    let scrollTopButton: HTMLElement;
 
-    fireEvent.click(scrollTopButton);
+    await waitFor(() => {
+      scrollTopButton = screen.getByText("Scroll to Top");
+      expect(scrollTopButton).toBeInTheDocument();
+    });
 
-    expect(spyScrollTo).toHaveBeenCalledWith({
-      top: 0,
-      behavior: "smooth",
+    act(() => {
+      fireEvent.click(scrollTopButton);
+    });
+
+    await waitFor(() => {
+      // Assert that setAddItem is called
+      expect(spyScrollTo).toHaveBeenCalledWith({
+        top: 0,
+        behavior: "smooth",
+      });
     });
   });
 
@@ -91,8 +105,8 @@ describe("VirtualList", () => {
     const newItems = { id: 20, name: "New Item" };
 
     const MockComponent = () => {
-      const { triggerAddItem } = useVirtualizedListContext();
-      return <button onClick={() => triggerAddItem(newItems)}>Click me</button>;
+      const { setAddItem } = useVirtualizedListContext();
+      return <button onClick={() => setAddItem(newItems)}>Click me</button>;
     };
 
     // Render the VirtualList component with the mocked context value
@@ -131,5 +145,62 @@ describe("VirtualList", () => {
         behavior: "smooth",
       });
     });
+  });
+
+  it("handles scroll events correctly, cancelling and setting new animation frames", () => {
+    let frameId = 0;
+    const frameCallbacks = new Map();
+
+    jest
+      .spyOn(window, "requestAnimationFrame")
+      .mockImplementation((callback) => {
+        const id = ++frameId;
+        frameCallbacks.set(id, callback);
+        return id;
+      });
+
+    jest.spyOn(window, "cancelAnimationFrame").mockImplementation((id) => {
+      frameCallbacks.delete(id);
+    });
+
+    window.triggerAnimationFrame = () => {
+      frameCallbacks.forEach((callback, id) => {
+        callback();
+        frameCallbacks.delete(id);
+      });
+    };
+
+    const items = Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      name: `Item ${i}`,
+    }));
+    const { container } = render(
+      <VirtualList items={items} itemHeight={72} itemContent={itemContent} />,
+    );
+
+    // Find the scrollable container. Assume it has a class or some identifiable attribute.
+    const scrollContainer = container.querySelector(".scrollContainer");
+
+    act(() => {
+      fireEvent.scroll(scrollContainer!, { target: { scrollTop: 100 } });
+    });
+
+    // This should lead to an initial requestAnimationFrame
+    expect(window.requestAnimationFrame).toHaveBeenCalled();
+    expect(window.cancelAnimationFrame).not.toHaveBeenCalled(); // No frame to cancel initially
+
+    // Trigger all pending animation frames
+    act(() => {
+      window.triggerAnimationFrame();
+    });
+
+    // Now simulate another scroll event
+    act(() => {
+      fireEvent.scroll(scrollContainer!, { target: { scrollTop: 200 } });
+    });
+
+    // This should cancel the previous frame and request a new one
+    expect(window.cancelAnimationFrame).toHaveBeenCalled();
+    expect(window.requestAnimationFrame).toHaveBeenCalledTimes(2);
   });
 });

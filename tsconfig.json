@@ -44,6 +44,7 @@
     "**/*.ts",
     "**/*.tsx",
     "types.d.ts",
+    "global.d.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": [

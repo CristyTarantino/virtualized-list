@@ -4,10 +4,10 @@ import { createRandomProduct } from "@/utils/data-creation";
 import { addProduct } from "@/app/actions/products";
 
 const AddProductButton = () => {
-  const { triggerAddItem } = useVirtualizedListContext();
+  const { setAddItem } = useVirtualizedListContext();
   const addItem = async () => {
     const response = await addProduct(createRandomProduct());
-    triggerAddItem(response?.product);
+    setAddItem(response?.product);
   };
 
   return (

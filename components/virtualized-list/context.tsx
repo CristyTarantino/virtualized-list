@@ -1,17 +1,10 @@
 "use client";
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, ReactNode, useContext, useMemo, useState } from "react";
 
 // Define the type for your context state
 export interface VirtualizedListContextType<T extends object> {
   addItem: T | null;
-  triggerAddItem: (newAction: T) => void;
+  setAddItem: (newAction: T) => void;
 }
 
 export const VirtualizedListContext = createContext<
@@ -27,14 +20,7 @@ export function VirtualizedListProvider<T>({
 }: Readonly<VirtualizedListProviderProps<T>>) {
   const [addItem, setAddItem] = useState<T | null>(null); // Replace 'any' with the specific type for addItem
 
-  const triggerAddItem = useCallback((newItem: T) => {
-    setAddItem(newItem);
-  }, []);
-
-  const value = useMemo(
-    () => ({ addItem, triggerAddItem }),
-    [addItem, triggerAddItem],
-  );
+  const value = useMemo(() => ({ addItem, setAddItem }), [addItem, setAddItem]);
 
   return (
     <VirtualizedListContext.Provider value={value}>

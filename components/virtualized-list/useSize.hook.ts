@@ -1,11 +1,4 @@
-import * as console from "node:console";
-import {
-  RefObject,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react";
+import { RefObject, useCallback, useEffect, useState } from "react";
 
 const useSize = (ref: RefObject<HTMLDivElement>, offset = 1) => {
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
