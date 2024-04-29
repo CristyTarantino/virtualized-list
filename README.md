@@ -40,7 +40,7 @@ TODO:
 - [ ] e2e tests
 - [ ] better documenting commits and commit messages
 - [ ] example of usage of the virtualized list in a traditional client component
-- [ ] examples of different uses of virtualized list with Storyboard
+- [ ] examples of different uses of virtualized list with Storybook
 - [ ] improved user experience
 
 N.B.
